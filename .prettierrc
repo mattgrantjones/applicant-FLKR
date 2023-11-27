@@ -1,0 +1,8 @@
+{
+  "plugins": [],
+  "bracketSpacing": true,
+  "trailingComma": "es5",
+  "singleQuote": false,
+  "pluginSearchDirs": false,
+  "semi": false
+}
