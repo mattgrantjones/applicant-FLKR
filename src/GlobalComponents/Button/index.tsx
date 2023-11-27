@@ -21,7 +21,12 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       type={type}
       disabled={isDisabled}
-      className={className}
+      className={
+        "hoverzoom-sm hover:shadow-xl text-md bg-pin rounded shadow-sm px-8 py-2 h-12 bg-blue-light text-midnight  " +
+        className +
+        " " +
+        (isDisabled ? "cursor-not-allowed" : "cursor-pointer")
+      }
     >
       {label}
     </button>
