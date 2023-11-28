@@ -13,9 +13,7 @@ type InputProps = {
   id?: string
   isDisabled?: boolean
   fullWidth?: boolean
-  maxCharacters?: number
   helperMessage?: string
-  hideHelperTextIfValid?: boolean
 }
 
 const Input: React.FC<InputProps> = ({
@@ -25,19 +23,12 @@ const Input: React.FC<InputProps> = ({
   id,
   isDisabled = false,
   fullWidth = true,
-  maxCharacters,
   helperMessage,
-  hideHelperTextIfValid = true,
 }) => {
   // Hooks
-  const {
-    register,
-    formState: { errors },
-    getFieldState,
-  } = useFormContext()
+  const { register, trigger, setValue, getFieldState } = useFormContext()
   const inputId = id || `text-input-${name}`
-  const error = errors[name]
-  const isValid = getFieldState(name).isTouched && !error
+  const { error } = getFieldState(name)
 
   // Styles
   const formStateClasses = useMemo(() => {
@@ -67,12 +58,15 @@ const Input: React.FC<InputProps> = ({
         id={inputId}
         name={name}
         disabled={isDisabled}
-        formNoValidate
+        onChange={({ target: { value } }) => {
+          // Setting the value manually so we can trigger revalidation on change if the input has errors
+          setValue(name, value)
+          error && trigger(name)
+        }}
         className={
           "px-2 h-10 rounded-lg bg-blue-light text-xl focus:outline-none focus:ring-1  " +
           (fullWidth ? "w-full" : "w-auto")
         }
-        maxLength={maxCharacters}
       />
       <FieldHelperText
         errorMessage={
@@ -81,9 +75,7 @@ const Input: React.FC<InputProps> = ({
               "Invalid input"
             : undefined
         }
-        helperMessage={
-          hideHelperTextIfValid && isValid ? undefined : helperMessage
-        }
+        helperMessage={helperMessage}
       />
     </div>
   )

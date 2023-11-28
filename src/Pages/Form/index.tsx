@@ -1,163 +1,157 @@
-import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 // Hooks
-import { FormProvider, useForm } from "react-hook-form"
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form"
 
 // Form Validation
-import { schema } from "./Schema"
+import { formSchema } from "./Schema"
 
 // Components
 import Button from "../../GlobalComponents/Button"
-// import CheckBox from "../../GlobalComponents/Checkbox"
+import CheckBox from "../../GlobalComponents/Checkbox"
 import Input from "../../GlobalComponents/Input"
-import ApplicantCard from "./Components/ApplicantCard"
+import FieldHelperText from "../../GlobalComponents/FieldHelperText"
+import TrashIcon from "../../Assets/Icons/TrashIcon"
 
 const Form: React.FC = () => {
-  // State
-  const [applicants, setApplicants] = useState<
-    Zod.infer<typeof schema>[] | undefined
-  >()
+  // Default Values
+  const defaultValues = {
+    applicants: [
+      {
+        firstName: "",
+        lastName: "",
+        mobile: "",
+        email: "",
+        isPrimary: true,
+      },
+    ],
+  }
 
   // Hooks
   const formMethods = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      id: 0,
-      firstName: "",
-      lastName: "",
-      mobile: "",
-      email: "",
-    },
+    resolver: zodResolver(formSchema),
+    defaultValues,
   })
 
   // Form Helpers
-  const { handleSubmit, getValues, formState, reset, trigger, setValue } =
-    formMethods
-  const { isValid, isDirty } = formState
+  const {
+    formState: { errors, isValid },
+    setValue,
+    clearErrors,
+    trigger,
+    watch,
+    handleSubmit,
+  } = formMethods
+  const applicants = watch("applicants")
 
-  const submitForm = handleSubmit(async (formValues) => {
-    !isDirty && trigger(undefined, { shouldFocus: true })
-    console.log("submitted", { formValues, isDirty, isValid })
-  })
-
-  const resetToDefaultValues = () =>
-    reset({
-      id: 0,
-      firstName: "",
-      lastName: "",
-      mobile: "",
-      email: "",
-    })
-
-  // Check if the current applicant (by ID or email) already exists in the applicants state
-  const checkIfApplicantExists = () =>
-    applicants?.some((applicant) => {
-      const values = getValues()
-      return applicant.id === values.id || applicant.email === values.email
-    })
-
-  // Assign a new ID to a new applicant
-  const assignApplicantId = () => {
-    return applicants?.length ? applicants.length + 1 : 1
+  const deleteApplicant = (
+    applicantToDelete: (typeof applicants)[number],
+    applicantIndex: number
+  ) => {
+    applicants.length > 1 &&
+      applicantIndex !== 0 &&
+      setValue(
+        "applicants",
+        applicants?.filter((applicant) => applicant !== applicantToDelete)
+      )
+    clearErrors(`applicants.${applicantIndex}`)
+    trigger()
   }
 
-  // Save the current applicant to the applicants state after validating
-  const saveChanges = (resetValue?: "default" | "previous") => {
-    const isExistingApplicant = checkIfApplicantExists()
-    const values = getValues()
+  const addNewApplicant = () => {
     trigger()
-
-    // Update the values for an existing applicant
-    if (isExistingApplicant) {
-      console.log("Is Exising Applicant", { values, isValid })
-      isValid &&
-        setApplicants([
-          ...(applicants?.filter((applicant) => applicant.id !== values.id) ||
-            []),
-          values,
-        ])
-    }
-
-    // Add a new applicant
-    if (!isExistingApplicant) {
-      console.log("Is New Applicant", { values, isValid })
-      setValue("id", assignApplicantId())
-      isValid &&
-        setApplicants([
-          ...(applicants || []),
-          { ...values, id: assignApplicantId() },
-        ])
-    }
-
-    // Reset the form
     if (isValid) {
-      resetValue === "default"
-        ? resetToDefaultValues()
-        : resetValue === "previous"
-        ? reset(applicants?.[applicants.length - 1])
-        : null
+      setValue(`applicants.${applicants.length}`, {
+        ...defaultValues.applicants[0],
+        isPrimary: false,
+      })
     }
+  }
+
+  const onSubmit: SubmitHandler<Zod.infer<typeof formSchema>> = (
+    formValues
+  ) => {
+    alert("Form Submitted! Please check the console to see the form values. ")
+    console.log({ formValues })
   }
 
   return (
     <FormProvider {...formMethods}>
-      <h1>Applicant FLKR</h1>
-      {applicants?.map((applicant) => (
-        <ApplicantCard
-          applicant={applicant}
-          onClick={() => reset(applicant)}
-          key={`applicant-${applicant.id}-${applicant.email}`}
-        />
-      ))}
       <form
-        onSubmit={submitForm}
-        className="flex flex-col max-w-3xl items-stretch w-full gap-2 bg-white rounded-xl shadow-2xl px-36 py-20"
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col max-w-3xl items-stretch w-full gap-7 bg-white rounded-xl shadow-2xl sm:px-12 sm:py-8 md:px-28 md:py-16 lg:px-32 lg:py-20"
       >
-        <Input label="First name" name="firstName" />
-        <Input label="Last name" name="lastName" />
-        <Input label="Email" name="email" />
-        <Input
-          label="Phone Number"
-          name="mobile"
-          helperMessage="(Example: 0400 000 000 or +61 400 000 000)"
-        />
-        {/* <CheckBox label="Check me" name="check" /> */}
-        <div className="BUTTON-SECTION flex flex-col gap-4 mt-12">
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              label={
-                checkIfApplicantExists() ? "Save Changes" : "Save + Add Another"
+        <h1 className="pb-8 text-purple-medium">Application Form</h1>
+        {applicants?.map((applicant, applicantIndex) => {
+          const error =
+            formMethods.formState.errors?.applicants?.[applicantIndex]
+          return (
+            <div
+              id={`applicant-form-${applicantIndex}`}
+              className={
+                "FORM-CONTAINER flex flex-col gap-2 border-2 border-dashed shadow-blue-light shadow-lg rounded-xl p-8 mx-[-2px] " +
+                (error
+                  ? "border-pink-medium"
+                  : "border-blue-medium border-opacity-70")
               }
-              className="secondary-inverted-light flk-shadow-purple grow "
-              isDisabled={!isValid}
-              onClick={() => saveChanges("default")}
-            />
-            <Button
-              type="button"
-              label="Cancel"
-              className="bg-zinc-light border border-zinc-dark shadow-lg shadow-zinc-medium w-1/3 "
-              isDisabled={!isDirty}
-              onClick={() => {
-                resetToDefaultValues()
-              }}
-            />
-          </div>
+              key={`applicant-form-${applicantIndex}`}
+            >
+              <div className="FORM-HEADER flex justify-between mb-4 border-b border-zinc-light ">
+                <h3>Applicant Details</h3>
+                {applicants.length > 1 && applicantIndex > 0 && (
+                  <TrashIcon
+                    width="20"
+                    className="fill-zinc-dark hover:scale-105 hover:fill-pink-medium active:scale-75 active:duration-75 transition-all duration-200 ease-in-out cursor-pointer "
+                    onClick={() => deleteApplicant(applicant, applicantIndex)}
+                  />
+                )}
+              </div>
+              <Input
+                label="First name"
+                name={`applicants[${applicantIndex}].firstName`}
+              />
+              <Input
+                label="Last name"
+                name={`applicants[${applicantIndex}].lastName`}
+              />
+              <Input
+                label="Email"
+                name={`applicants[${applicantIndex}].email`}
+              />
+              <Input
+                label="Mobile Number"
+                name={`applicants[${applicantIndex}].mobile`}
+              />
+              <CheckBox
+                label="Primary Applicant"
+                name={`applicants[${applicantIndex}].isPrimary`}
+                isDisabled={applicants.length === 1}
+              />
+            </div>
+          )
+        })}
 
+        <div className="ERROR-BLOCK relative flex pb-5">
+          {errors && (
+            <FieldHelperText
+              errorMessage={errors?.applicants?.[0]?.isPrimary?.message}
+            />
+          )}
+        </div>
+
+        <div className="BUTTON-CONTAINER relative flex flex-col gap-2">
           <Button
-            label={`Submit ${
-              // Get number of active applicants in the form
-              applicants?.length
-                ? `${applicants.length + (isDirty ? 1 : 0)} `
-                : ""
-            }
-            ${
-              // Get the appropriate pluralisation
+            type="button"
+            label="+ Add another applicant"
+            className="secondary-inverted-medium flk-shadow-purple "
+            onClick={addNewApplicant}
+          />
+          <Button
+            label={`Submit ${applicants?.length} ${
               applicants?.length === 1 ? "Applicant" : "Applicants"
             }`}
-            onClick={submitForm}
-            isDisabled={!applicants?.length || (isDirty && !isValid)}
+            type="submit"
+            isDisabled={!applicants?.length}
             className="primary-medium flk-shadow-blue "
           />
         </div>

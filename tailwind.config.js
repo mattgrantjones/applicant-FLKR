@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import plugin from "tailwindcss/plugin"
+import formsPlugin from "@tailwindcss/forms"
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
@@ -13,8 +14,8 @@ export default {
         dark: "#0051FF",
       },
       purple: {
-        light: "#7D47E4",
-        medium: "#6D47FF",
+        light: "#b191ef",
+        medium: "#7D47E4",
         dark: "#56379E",
       },
       pink: {
@@ -34,6 +35,7 @@ export default {
     extend: {},
   },
   plugins: [
+    formsPlugin,
     plugin(({ matchUtilities, theme }) => {
       matchUtilities(
         {

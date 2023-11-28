@@ -11,7 +11,7 @@ const FormLabel: React.FC<FormLabelProps> = ({
 }) => (
   <label
     htmlFor={htmlFor}
-    className={"text-midnight font-light text-sm  " + className}
+    className={"text-midnight select-none font-light text-sm  " + className}
   >
     {labelContent}
   </label>

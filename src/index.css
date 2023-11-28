@@ -19,7 +19,7 @@
   h4,
   h5,
   h6 {
-    @apply text-midnight font-bold;
+    @apply text-midnight font-bold text-left;
   }
 
   h1 {
