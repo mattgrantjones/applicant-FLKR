@@ -31,23 +31,29 @@ const CheckBox: React.FC<CheckBoxProps> = ({
   const formStateClasses = useMemo(() => {
     if (error) {
       // Error Styles
-      const containerStyles = "text-pink-medium  "
+      const containerStyles = "text-pink-medium cursor-pointer  "
       const inputStyles =
         "[&_input]:focus-within:ring-pink-medium [&_input]:text-pink-light "
       const labelStyles = "[&_label]:text-pink-medium [&_label]:font-normal  "
       return containerStyles + inputStyles + labelStyles
+    } else if (isDisabled) {
+      // Disabled Styles
+      const containerStyles = "text-zinc-dark cursor-auto opacity-75 "
+      const inputStyles =
+        "[&_input]:focus-within:ring-zinc-medium [&_input]:text-zinc-dark "
+      const labelStyles = "[&_label]:text-zinc-dark [&_label]:font-normal  "
+      return containerStyles + inputStyles + labelStyles
     }
     // Base Styles (no error)
-    return "[&_input]:focus-within:ring-blue-light [&_input]:text-blue-medium "
-  }, [error])
+    else {
+      return "[&_input]:focus-within:ring-blue-light [&_input]:text-blue-medium cursor-pointer "
+    }
+  }, [error, isDisabled])
 
   return (
     <div
       className={
-        "relative flex gap-2 py-5 w-full " +
-        className +
-        (!isDisabled ? "cursor-pointer " : "cursor-auto ") +
-        formStateClasses
+        "relative flex gap-2 py-5 w-full " + className + formStateClasses
       }
       onClick={() => {
         if (!isDisabled) {
