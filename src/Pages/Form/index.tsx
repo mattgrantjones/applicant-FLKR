@@ -78,7 +78,7 @@ const Form: React.FC = () => {
     <FormProvider {...formMethods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col max-w-3xl items-stretch w-full gap-7 bg-white rounded-xl shadow-2xl sm:px-12 sm:py-8 md:px-28 md:py-16 lg:px-32 lg:py-20"
+        className="flex flex-col max-w-3xl items-stretch w-full gap-7 bg-white rounded-xl shadow-2xl px-3 py-8 sm:px-12 sm:py-8 md:px-28 md:py-16 lg:px-32 lg:py-20"
       >
         <h1 className="pb-8 text-purple-medium">Application Form</h1>
         {applicants?.map((applicant, applicantIndex) => {
