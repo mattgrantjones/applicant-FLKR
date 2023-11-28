@@ -32,12 +32,13 @@ const CheckBox: React.FC<CheckBoxProps> = ({
     if (error) {
       // Error Styles
       const containerStyles = "text-pink-medium  "
-      const inputStyles = "[&_input]:text-pink-light "
+      const inputStyles =
+        "[&_input]:focus-within:ring-pink-medium [&_input]:text-pink-light "
       const labelStyles = "[&_label]:text-pink-medium [&_label]:font-normal  "
       return containerStyles + inputStyles + labelStyles
     }
     // Base Styles (no error)
-    return "[&_input]:text-blue-medium "
+    return "[&_input]:focus-within:ring-blue-light [&_input]:text-blue-medium "
   }, [error])
 
   return (
@@ -61,7 +62,7 @@ const CheckBox: React.FC<CheckBoxProps> = ({
         id={inputId}
         type="checkbox"
         disabled={isDisabled}
-        className="w-5 h-5 rounded-md "
+        className="w-5 h-5 rounded-md focus:ring-2 "
       />
       <FormLabel
         htmlFor={name}

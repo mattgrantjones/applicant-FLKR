@@ -43,7 +43,6 @@ const Form: React.FC = () => {
     handleSubmit,
   } = formMethods
   const applicants = watch("applicants")
-
   const deleteApplicant = (
     applicantToDelete: (typeof applicants)[number],
     applicantIndex: number
@@ -134,7 +133,9 @@ const Form: React.FC = () => {
         <div className="ERROR-BLOCK relative flex pb-5">
           {errors && (
             <FieldHelperText
-              errorMessage={errors?.applicants?.[0]?.isPrimary?.message}
+              errorMessage={
+                errors?.applicants?.[applicants.length - 1]?.isPrimary?.message
+              }
             />
           )}
         </div>

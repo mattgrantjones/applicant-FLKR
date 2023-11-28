@@ -12,7 +12,7 @@ const FieldHelperText: React.FC<FieldHelperTextProps> = ({
   return (
     <p
       className={
-        "text-sm absolute bottom-0 left-[2px]  " +
+        "text-sm absolute -bottom-0  " +
         className +
         " " +
         (errorMessage ? "text-pink-medium" : "text-zinc-dark")

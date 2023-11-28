@@ -35,12 +35,13 @@ const Input: React.FC<InputProps> = ({
     if (error) {
       // Error Styles
       const containerStyles = "text-pink-medium  "
-      const inputStyles = "[&_input]:ring-pink-medium [&_input]:bg-pink-light  "
+      const inputStyles =
+        "[&_input]:focus-within:ring-pink-medium [&_input]:bg-pink-light  "
       const labelStyles = "[&_label]:text-pink-medium [&_label]:font-normal  "
       return containerStyles + inputStyles + labelStyles
     }
     // Base Styles (no error)
-    return "[&_input]:ring-black [&_input]:bg-blue-light  "
+    return "[&_input]:focus-within:ring-blue-medium [&_input]:bg-blue-light "
   }, [error])
 
   return (
@@ -64,7 +65,7 @@ const Input: React.FC<InputProps> = ({
           error && trigger(name)
         }}
         className={
-          "px-2 h-10 rounded-lg bg-blue-light text-xl focus:outline-none focus:ring-1  " +
+          "px-2 h-10 rounded-lg bg-blue-light text-xl border-none focus:outline-none focus:ring-1  " +
           (fullWidth ? "w-full" : "w-auto")
         }
       />
