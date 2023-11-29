@@ -36,40 +36,46 @@ export default {
   },
   plugins: [
     formsPlugin,
-    plugin(({ matchUtilities, theme }) => {
-      matchUtilities(
-        {
-          primary: (value) => ({
-            backgroundColor: theme("colors.blue")[value],
-            color:
-              value === "light"
-                ? theme("colors.midnight")
-                : theme("colors.white"),
-          }),
-          secondary: (value) => ({
-            backgroundColor: theme("colors.purple")[value],
-            color: theme("colors.white"),
-          }),
-          "primary-inverted": (value) => ({
-            backgroundColor: theme("colors.white"),
-            color: theme("colors.blue")[value],
-            border: `1px solid ${theme("colors.blue")[value]}`,
-          }),
-          "secondary-inverted": (value) => ({
-            backgroundColor: theme("colors.white"),
-            color: theme("colors.purple")[value],
-            border: `1px solid ${theme("colors.purple")[value]}`,
-          }),
+    plugin(({ addUtilities, matchUtilities, theme }) => {
+      addUtilities({
+        ".text-gradient": {
+          "-webkit-background-clip": "text",
+          "-webkit-text-fill-color": "transparent",
         },
-        {
-          values: {
-            light: "light",
-            medium: "medium",
-            dark: "dark",
-            ...theme("spaces"),
+      }),
+        matchUtilities(
+          {
+            primary: (value) => ({
+              backgroundColor: theme("colors.blue")[value],
+              color:
+                value === "light"
+                  ? theme("colors.midnight")
+                  : theme("colors.white"),
+            }),
+            secondary: (value) => ({
+              backgroundColor: theme("colors.purple")[value],
+              color: theme("colors.white"),
+            }),
+            "primary-inverted": (value) => ({
+              backgroundColor: theme("colors.white"),
+              color: theme("colors.blue")[value],
+              border: `1px solid ${theme("colors.blue")[value]}`,
+            }),
+            "secondary-inverted": (value) => ({
+              backgroundColor: theme("colors.white"),
+              color: theme("colors.purple")[value],
+              border: `1px solid ${theme("colors.purple")[value]}`,
+            }),
           },
-        }
-      ),
+          {
+            values: {
+              light: "light",
+              medium: "medium",
+              dark: "dark",
+              ...theme("spaces"),
+            },
+          }
+        ),
         // Playing with some hover plugins
         matchUtilities(
           {

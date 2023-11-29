@@ -10,7 +10,7 @@
   }
 
   body {
-    max-width: 1920px;
+    @apply max-w-[1920px] mx-auto p-0 md:p-20;
   }
 
   h1,
@@ -32,6 +32,15 @@
 
   h3 {
     @apply text-2xl pb-3;
+  }
+
+  /** Hide the number spinners */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"] {
+    -webkit-appearance: none;
+    margin: 0;
+    -moz-appearance: textfield !important;
   }
 }
 

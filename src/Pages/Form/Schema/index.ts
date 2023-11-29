@@ -22,26 +22,34 @@ export const formSchema = z
   })
   .superRefine((data, ctx) => {
     if (data.applicants.filter((applicant) => applicant.isPrimary).length > 1) {
+      const applicantIndex = data.applicants.findIndex(
+        (applicant) => applicant.isPrimary
+      )
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Only one primary applicant is allowed",
-        path: [`applicants[${data.applicants.length - 1}].isPrimary`],
+        path: ["root"],
+      })
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Only one primary applicant is allowed",
+        path: [`applicants[${applicantIndex}].isPrimary`],
       })
     }
 
     if (data.applicants.filter((applicant) => applicant.isPrimary).length < 1) {
+      const applicantIndex = data.applicants.findIndex(
+        (applicant) => applicant.isPrimary
+      )
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Please select a primary applicant",
-        path: ["applicants[0].isPrimary"],
+        path: ["root"],
+      })
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Please select a primary applicant",
+        path: [`applicants[${applicantIndex}].isPrimary`],
       })
     }
   })
-
-// .refine(
-//   (data) =>
-//     data.applicants.filter((applicant) => applicant.isPrimary).length < 2,
-//   (data) => ({
-//     message: "Only one primary applicant is allowed",
-//     path: [`applicants[${data.applicants.length - 1}].isPrimary`],
-//   })

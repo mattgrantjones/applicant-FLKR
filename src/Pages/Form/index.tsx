@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 // Hooks
@@ -35,12 +36,13 @@ const Form: React.FC = () => {
 
   // Form Helpers
   const {
-    formState: { errors, isValid },
+    formState: { errors },
     setValue,
     clearErrors,
     trigger,
     watch,
     handleSubmit,
+    reset,
   } = formMethods
   const applicants = watch("applicants")
   const deleteApplicant = (
@@ -59,7 +61,7 @@ const Form: React.FC = () => {
 
   const addNewApplicant = () => {
     trigger()
-    if (isValid) {
+    if (!errors.applicants) {
       setValue(`applicants.${applicants.length}`, {
         ...defaultValues.applicants[0],
         isPrimary: false,
@@ -72,15 +74,27 @@ const Form: React.FC = () => {
   ) => {
     alert("Form Submitted! Please check the console to see the form values. ")
     console.log({ formValues })
+    reset()
   }
+
+  // Effect: Reset primary applicant if other applicants are deleted
+  useEffect(() => {
+    if (applicants?.length === 1 && !applicants[0].isPrimary) {
+      setValue("applicants.0.isPrimary", true)
+      trigger()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applicants.length])
 
   return (
     <FormProvider {...formMethods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col max-w-3xl items-stretch w-full gap-7 bg-white rounded-xl shadow-2xl px-3 py-8 sm:px-12 sm:py-8 md:px-28 md:py-16 lg:px-32 lg:py-20"
+        className="flex flex-col max-w-3xl items-stretch w-full gap-7 bg-white bg-opacity-50 sm:bg-opacity-100 sm:rounded-xl shadow-2xl px-3 py-8 sm:px-12 sm:py-8 md:px-28 md:py-16 lg:px-32 lg:py-20"
       >
-        <h1 className="pb-8 text-purple-medium">Application Form</h1>
+        <h1 className="text-gradient bg-gradient-to-br from-purple-light to-purple-dark">
+          Application Form
+        </h1>
         {applicants?.map((applicant, applicantIndex) => {
           const error =
             formMethods.formState.errors?.applicants?.[applicantIndex]
@@ -88,10 +102,11 @@ const Form: React.FC = () => {
             <div
               id={`applicant-form-${applicantIndex}`}
               className={
-                "FORM-CONTAINER flex flex-col gap-2 border-2 border-dashed shadow-blue-light shadow-lg rounded-xl p-8 mx-[-2px] " +
+                "FORM-CONTAINER flex flex-col gap-2 border-2 bg-white shadow-purple-light shadow-lg rounded-xl p-8 mx-[-2px] " +
                 (error
-                  ? "border-pink-medium"
-                  : "border-blue-medium border-opacity-70")
+                  ? "border-pink-medium ring-pink-medium "
+                  : "border-blue-medium border-opacity-70 ring-blue-medium ") +
+                (applicant.isPrimary ? "ring-2 " : "border-dashed ")
               }
               key={`applicant-form-${applicantIndex}`}
             >
@@ -120,6 +135,7 @@ const Form: React.FC = () => {
               <Input
                 label="Mobile Number"
                 name={`applicants[${applicantIndex}].mobile`}
+                type="number"
               />
               <CheckBox
                 label="Primary Applicant"
@@ -129,16 +145,14 @@ const Form: React.FC = () => {
             </div>
           )
         })}
-
-        <div className="ERROR-BLOCK relative flex pb-5">
-          {errors && (
+        {!!errors.root && (
+          <div className="ERROR-PILL relative h-10 bg-[red] bg-opacity-50 sm:bg-white rounded-full">
             <FieldHelperText
-              errorMessage={
-                errors?.applicants?.[applicants.length - 1]?.isPrimary?.message
-              }
+              errorMessage={errors.root?.message}
+              className="font-bold sm:font-normal left-4 -translate-y-1/2 text-white sm:text-pink-medium"
             />
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="BUTTON-CONTAINER relative flex flex-col gap-2">
           <Button
@@ -153,7 +167,7 @@ const Form: React.FC = () => {
             }`}
             type="submit"
             isDisabled={!applicants?.length}
-            className="primary-medium flk-shadow-blue "
+            className="primary-dark sm:primary-medium flk-shadow-blue "
           />
         </div>
       </form>

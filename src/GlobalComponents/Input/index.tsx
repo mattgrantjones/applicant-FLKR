@@ -9,6 +9,7 @@ import { useMemo } from "react"
 type InputProps = {
   label: string
   name: string
+  type?: "text" | "number"
   className?: string
   id?: string
   isDisabled?: boolean
@@ -19,6 +20,7 @@ type InputProps = {
 const Input: React.FC<InputProps> = ({
   label,
   name,
+  type = "text",
   className,
   id,
   isDisabled = false,
@@ -55,7 +57,7 @@ const Input: React.FC<InputProps> = ({
       <FormLabel labelContent={label} htmlFor={inputId} />
       <input
         {...register(name)}
-        type="text"
+        type={type}
         id={inputId}
         name={name}
         disabled={isDisabled}
