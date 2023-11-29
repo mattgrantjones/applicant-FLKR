@@ -38,18 +38,10 @@ export const formSchema = z
     }
 
     if (data.applicants.filter((applicant) => applicant.isPrimary).length < 1) {
-      const applicantIndex = data.applicants.findIndex(
-        (applicant) => applicant.isPrimary
-      )
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Please select a primary applicant",
         path: ["root"],
-      })
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Please select a primary applicant",
-        path: [`applicants[${applicantIndex}].isPrimary`],
       })
     }
   })
