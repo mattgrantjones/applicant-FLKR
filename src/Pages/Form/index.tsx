@@ -36,7 +36,7 @@ const Form: React.FC = () => {
 
   // Form Helpers
   const {
-    formState: { errors },
+    formState: { errors, isValid },
     setValue,
     clearErrors,
     trigger,
@@ -45,6 +45,9 @@ const Form: React.FC = () => {
     reset,
   } = formMethods
   const applicants = watch("applicants")
+  const primaryApplicants = applicants?.filter(
+    (applicant) => applicant.isPrimary
+  )
   const deleteApplicant = (
     applicantToDelete: (typeof applicants)[number],
     applicantIndex: number
@@ -86,16 +89,17 @@ const Form: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applicants.length])
 
+  // Effect: If there are errors and there is a change on the primary applicant, trigger revalidation
+  useEffect(() => {
+    if (errors.root?.message && primaryApplicants.length) {
+      trigger()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errors.root?.message, primaryApplicants.length])
+
   return (
     <FormProvider {...formMethods}>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault()
-          trigger()
-          handleSubmit(onSubmit)
-        }}
-        className="flex flex-col max-w-3xl items-stretch w-full gap-7 bg-white bg-opacity-50 sm:bg-opacity-100 sm:rounded-xl shadow-2xl px-3 py-8 sm:px-12 sm:py-8 md:px-28 md:py-16 lg:px-32 lg:py-20"
-      >
+      <form className="flex flex-col max-w-3xl items-stretch w-full gap-7 bg-white bg-opacity-50 sm:bg-opacity-100 sm:rounded-xl shadow-2xl px-3 py-8 sm:px-12 sm:py-8 md:px-28 md:py-16 lg:px-32 lg:py-20">
         <h1 className="text-gradient bg-gradient-to-br from-purple-light to-purple-dark">
           Application Form
         </h1>
@@ -169,7 +173,12 @@ const Form: React.FC = () => {
             label={`Submit ${applicants?.length} ${
               applicants?.length === 1 ? "Applicant" : "Applicants"
             }`}
-            type="submit"
+            onClick={() => {
+              trigger()
+              if (isValid) {
+                handleSubmit(onSubmit)()
+              }
+            }}
             isDisabled={!applicants?.length}
             className="primary-dark sm:primary-medium flk-shadow-blue "
           />
